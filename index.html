@@ -118,26 +118,87 @@
     text-align: center;
     margin: 0 16px 24px;
   }
-  .strip {
+  /* screenshot carousel: one big frame, game-style arrows, thumbnails */
+  .carousel { width: min(960px, calc(100% - 32px)); margin: 0 auto; position: relative; }
+  .frame {
+    padding: clamp(8px, 1.2vw, 14px);
+    background: var(--panel);
+    border: clamp(6px, .9vw, 9px) solid var(--rim);
+    border-radius: clamp(22px, 3vw, 38px);
+    box-shadow: 0 10px 0 var(--ink);
+  }
+  .track {
     display: flex;
-    gap: 20px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
-    padding: 8px max(16px, calc((100% - 1040px) / 2)) 28px;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    border-radius: clamp(12px, 1.8vw, 24px);
   }
-  .strip figure { margin: 0; flex: 0 0 min(520px, 82vw); scroll-snap-align: center; }
-  .strip img {
-    display: block;
+  .track::-webkit-scrollbar { display: none; }
+  .track img {
+    flex: 0 0 100%;
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    border: 6px solid var(--rim);
-    border-radius: 24px;
-    box-shadow: 0 8px 0 var(--ink);
+    scroll-snap-align: center;
+    display: block;
   }
-  .strip figcaption { font-weight: 800; margin-top: 14px; text-align: center; }
+  .arrow {
+    position: absolute;
+    top: calc(50% - 88px);
+    width: 76px;
+    height: 76px;
+    border: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 35%, #5ccaf5, #1fa4e0 62%);
+    box-shadow: 0 7px 0 #146f9c, 0 10px 0 var(--ink);
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    transition: transform .1s ease-out;
+  }
+  .arrow svg { width: 30px; height: 30px; }
+  .arrow:hover { transform: scale(1.06); }
+  .arrow:active { transform: translateY(5px); box-shadow: 0 2px 0 #146f9c, 0 5px 0 var(--ink); }
+  .arrow.prev { left: -100px; }
+  .arrow.next { right: -100px; }
+  .caption {
+    font-family: "Lilita One", sans-serif;
+    font-size: clamp(26px, 3.2vw, 36px);
+    color: #fff;
+    -webkit-text-stroke: 5px var(--ink);
+    paint-order: stroke fill;
+    text-align: center;
+    margin: 26px 0 18px;
+    min-height: 1.2em;
+  }
+  .thumbs { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .thumbs button {
+    padding: 0;
+    width: 96px;
+    aspect-ratio: 16 / 9;
+    border: 4px solid var(--rim);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--panel);
+    cursor: pointer;
+    opacity: .75;
+    transition: transform .1s ease-out, opacity .1s;
+  }
+  .thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumbs button:hover { opacity: 1; transform: translateY(-2px); }
+  .thumbs button[aria-current="true"] { border-color: var(--sun); opacity: 1; box-shadow: 0 0 0 3px var(--ink); }
+  @media (max-width: 1180px) {
+    .arrow { width: 58px; height: 58px; top: calc(50% - 82px); }
+    .arrow.prev { left: 6px; }
+    .arrow.next { right: 6px; }
+  }
+  @media (max-width: 560px) {
+    .thumbs button { width: 64px; border-width: 3px; border-radius: 9px; }
+  }
 
-  .runway { height: 170px; }
+  .runway { height: 190px; }
   .ground {
     position: relative;
     height: 150px;
@@ -197,15 +258,32 @@
 
   <section class="shots" aria-labelledby="shots-title">
     <h2 id="shots-title">Screenshots</h2>
-    <div class="strip">
-      <figure><img src="media/screens/02-gameplay.jpg" alt="The cube running towards spikes" loading="lazy"><figcaption>Tap to jump</figcaption></figure>
-      <figure><img src="media/screens/03-orbs.jpg" alt="Jump orbs above a row of spikes" loading="lazy"><figcaption>Orbs and pads</figcaption></figure>
-      <figure><img src="media/screens/04-gravity.jpg" alt="The cube running on the ceiling" loading="lazy"><figcaption>Gravity portals</figcaption></figure>
-      <figure><img src="media/screens/05-ship.jpg" alt="The ship flying between block columns" loading="lazy"><figcaption>Ship mode</figcaption></figure>
-      <figure><img src="media/screens/06-skins.jpg" alt="Skin picker with bodies and faces" loading="lazy"><figcaption>24 bodies, 12 faces</figcaption></figure>
-      <figure><img src="media/screens/07-settings.jpg" alt="Settings with backgrounds, ground styles and sound" loading="lazy"><figcaption>Pick your world</figcaption></figure>
-      <figure><img src="media/screens/01-main-menu.jpg" alt="Main menu" loading="lazy"><figcaption>Main menu</figcaption></figure>
-      <figure><img src="media/screens/08-level-complete.jpg" alt="Level complete screen" loading="lazy"><figcaption>Level complete</figcaption></figure>
+    <div class="carousel" role="region" aria-roledescription="carousel" aria-label="Screenshots">
+      <div class="frame">
+        <div class="track" tabindex="0">
+          <img src="media/screens/02-gameplay.jpg" alt="The cube running towards spikes" data-caption="Tap to jump">
+          <img src="media/screens/03-orbs.jpg" alt="Jump orbs above a row of spikes" data-caption="Orbs and pads" loading="lazy">
+          <img src="media/screens/04-gravity.jpg" alt="The cube running on the ceiling" data-caption="Gravity portals" loading="lazy">
+          <img src="media/screens/05-ship.jpg" alt="The ship flying between block columns" data-caption="Ship mode" loading="lazy">
+          <img src="media/screens/06-skins.jpg" alt="Skin picker with bodies and faces" data-caption="24 bodies, 12 faces" loading="lazy">
+          <img src="media/screens/07-settings.jpg" alt="Settings with backgrounds, ground styles and sound" data-caption="Pick your world" loading="lazy">
+          <img src="media/screens/01-main-menu.jpg" alt="Main menu" data-caption="Main menu" loading="lazy">
+          <img src="media/screens/08-level-complete.jpg" alt="Level complete screen" data-caption="Level complete" loading="lazy">
+        </div>
+      </div>
+      <button class="arrow prev" type="button" aria-label="Previous screenshot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3.5v17L4 12z" fill="#fff" stroke="#1f0f4d" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+      <button class="arrow next" type="button" aria-label="Next screenshot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5v17L20 12z" fill="#fff" stroke="#1f0f4d" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+      <p class="caption" aria-live="polite">Tap to jump</p>
+      <div class="thumbs">
+      <button type="button" aria-label="Show: Tap to jump" aria-current="true"><img src="media/screens/02-gameplay.jpg" alt="" loading="lazy"></button>
+      <button type="button" aria-label="Show: Orbs and pads"><img src="media/screens/03-orbs.jpg" alt="" loading="lazy"></button>
+      <button type="button" aria-label="Show: Gravity portals"><img src="media/screens/04-gravity.jpg" alt="" loading="lazy"></button>
+      <button type="button" aria-label="Show: Ship mode"><img src="media/screens/05-ship.jpg" alt="" loading="lazy"></button>
+      <button type="button" aria-label="Show: 24 bodies, 12 faces"><img src="media/screens/06-skins.jpg" alt="" loading="lazy"></button>
+      <button type="button" aria-label="Show: Pick your world"><img src="media/screens/07-settings.jpg" alt="" loading="lazy"></button>
+      <button type="button" aria-label="Show: Main menu"><img src="media/screens/01-main-menu.jpg" alt="" loading="lazy"></button>
+      <button type="button" aria-label="Show: Level complete"><img src="media/screens/08-level-complete.jpg" alt="" loading="lazy"></button>
+      </div>
     </div>
   </section>
   <div class="runway" aria-hidden="true"></div>
@@ -222,5 +300,34 @@
     </ul>
     <p class="made">Made with Unity 6. All gameplay logic is built with Visual Scripting graphs, no C# code.</p>
   </footer>
+<script>
+  (() => {
+    const track = document.querySelector('.track');
+    const slides = [...track.querySelectorAll('img')];
+    const thumbs = [...document.querySelectorAll('.thumbs button')];
+    const caption = document.querySelector('.caption');
+    let index = 0;
+    const show = i => {
+      index = (i + slides.length) % slides.length;
+      track.scrollTo({ left: index * track.clientWidth });
+    };
+    const sync = () => {
+      const i = Math.round(track.scrollLeft / track.clientWidth);
+      if (i === index && caption.textContent) { /* keep */ }
+      index = i;
+      caption.textContent = slides[i].dataset.caption;
+      thumbs.forEach((t, n) => t.setAttribute('aria-current', n === i ? 'true' : 'false'));
+    };
+    track.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    document.querySelector('.arrow.prev').addEventListener('click', () => show(index - 1));
+    document.querySelector('.arrow.next').addEventListener('click', () => show(index + 1));
+    thumbs.forEach((t, n) => t.addEventListener('click', () => show(n)));
+    track.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
+    });
+    window.addEventListener('resize', () => track.scrollTo({ left: index * track.clientWidth, behavior: 'instant' }));
+  })();
+</script>
 </body>
 </html>
