@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Geo Game — jump, fly, flip gravity</title>
+<meta name="description" content="A Geometry Dash–style runner made in Unity with Visual Scripting. Play it in your browser.">
+<meta property="og:title" content="Geo Game">
+<meta property="og:description" content="Jump, fly and flip gravity through spike-filled tracks. Play in your browser.">
+<meta property="og:image" content="media/poster.jpg">
+<link rel="icon" href="media/cube.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #8fd0f0;
+    --sky-light: #ddefff;
+    --field: #2ecc71;
+    --panel: #6446cc;
+    --rim: #c9b8ff;
+    --ink: #1f0f4d;
+    --sun: #ffd84a;
+    --go: #2bc27a;
+    --go-dark: #13804c;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; background: #6446cc; }
+  body {
+    margin: 0;
+    font-family: "Nunito", system-ui, sans-serif;
+    font-weight: 500;
+    color: var(--ink);
+    background: #fff;
+    line-height: 1.55;
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 4px solid var(--sun); outline-offset: 4px; border-radius: 12px; }
+
+  /* the game's own outlined title */
+  .title {
+    font-family: "Lilita One", sans-serif;
+    font-weight: 400;
+    color: var(--sun);
+    font-size: clamp(64px, 13vw, 168px);
+    line-height: .9;
+    margin: 0;
+    letter-spacing: .01em;
+    -webkit-text-stroke: clamp(4px, .9vw, 9px) var(--ink);
+    paint-order: stroke fill;
+    text-shadow: 0 .09em 0 rgba(31, 15, 77, .35);
+  }
+
+  header { text-align: center; padding: 56px 16px 8px; }
+
+  /* the page is a level: sky, hills, field, ground, underground */
+  .field {
+    background: url(media/hills.png) repeat-x 0 0 / 420px 420px, var(--field);
+    background-color: var(--field);
+    padding: 24px 0 8px;
+  }
+  .pitch { font-size: clamp(18px, 2.2vw, 22px); font-weight: 700; max-width: 34ch; margin: 18px auto 0; }
+
+  /* trailer in an in-game panel */
+  .screen {
+    width: min(1040px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: clamp(10px, 1.6vw, 18px);
+    background: var(--panel);
+    border: clamp(6px, 1vw, 10px) solid var(--rim);
+    border-radius: clamp(24px, 3.4vw, 44px);
+    box-shadow: 0 12px 0 var(--ink);
+  }
+  .screen video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: clamp(14px, 2vw, 28px);
+    background: var(--ink);
+  }
+
+  .play-row { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: 56px 16px 0; }
+  .play {
+    display: grid;
+    place-items: center;
+    width: 168px;
+    height: 168px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 35%, #46e39a, var(--go) 60%);
+    box-shadow: 0 10px 0 var(--go-dark), 0 14px 0 var(--ink);
+    text-decoration: none;
+    transition: transform .1s ease-out, box-shadow .1s ease-out;
+  }
+  .play svg { width: 64px; height: 64px; margin-left: 10px; }
+  .play:hover { transform: scale(1.05); }
+  .play:active { transform: translateY(8px); box-shadow: 0 2px 0 var(--go-dark), 0 6px 0 var(--ink); }
+  .play-label { font-family: "Lilita One", sans-serif; font-size: 34px; color: #fff; -webkit-text-stroke: 5px var(--ink); paint-order: stroke fill; margin: 0; }
+  .controls { margin: 0; font-weight: 800; text-align: center; max-width: 44ch; }
+  .controls kbd {
+    font: 800 15px "Nunito", sans-serif;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-bottom-width: 4px;
+    border-radius: 8px;
+    padding: 1px 8px;
+  }
+  .note { margin: 0; font-size: 15px; font-weight: 700; text-align: center; }
+
+  /* screenshots resting on the game's ground */
+  .shots { margin-top: 88px; }
+  .shots h2, .credits h2 {
+    font-family: "Lilita One", sans-serif;
+    font-weight: 400;
+    font-size: clamp(36px, 5vw, 56px);
+    color: #fff;
+    -webkit-text-stroke: 6px var(--ink);
+    paint-order: stroke fill;
+    text-align: center;
+    margin: 0 16px 24px;
+  }
+  .strip {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 8px max(16px, calc((100% - 1040px) / 2)) 28px;
+  }
+  .strip figure { margin: 0; flex: 0 0 min(520px, 82vw); scroll-snap-align: center; }
+  .strip img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 6px solid var(--rim);
+    border-radius: 24px;
+    box-shadow: 0 8px 0 var(--ink);
+  }
+  .strip figcaption { font-weight: 800; margin-top: 14px; text-align: center; }
+
+  .runway { height: 170px; }
+  .ground {
+    position: relative;
+    height: 150px;
+    margin-top: 0;
+    background:
+      url(media/ground-top.png) repeat-x top left / 64px 64px,
+      url(media/ground-fill.png) repeat left 64px / 64px 64px;
+  }
+  .runner {
+    position: absolute;
+    width: 72px;
+    height: 72px;
+    left: -80px;
+    top: -72px;
+    background: url(media/cube.png) center / contain no-repeat;
+    animation: run 9s linear 1s infinite, hop .55s ease-in-out 1s infinite alternate;
+  }
+  @keyframes run { to { left: calc(100% + 80px); } }
+  @keyframes hop {
+    from { transform: translateY(0) rotate(0deg); }
+    to   { transform: translateY(-80px) rotate(90deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .runner { animation: none; left: 24px; }
+    html { scroll-behavior: auto; }
+  }
+
+  .credits { background: var(--panel); color: #fff; padding: 48px 16px 56px; margin: 0; }
+  .credits h2 { -webkit-text-stroke-color: var(--ink); }
+  .credits ul { list-style: none; padding: 0; margin: 0 auto; max-width: 62ch; display: grid; gap: 10px; text-align: center; }
+  .credits a { color: var(--sun); font-weight: 800; }
+  .credits .made { margin: 28px auto 0; max-width: 56ch; text-align: center; opacity: .9; }
+</style>
+</head>
+<body>
+  <header>
+    <h1 class="title">Geo Game</h1>
+    <p class="pitch">Jump, fly and flip gravity through spike-filled tracks. One tap to jump, one mistake to start over.</p>
+  </header>
+
+  <main class="field">
+  <div class="screen">
+    <video controls playsinline preload="metadata" poster="media/poster.jpg">
+      <source src="media/trailer.mp4" type="video/mp4">
+      Your browser can't play this video. <a href="media/trailer.mp4">Download the trailer</a>.
+    </video>
+  </div>
+
+  <section class="play-row" aria-label="Play">
+    <a class="play" href="play/" aria-label="Play in browser">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5v17a1 1 0 0 0 1.5.86l14-8.5a1 1 0 0 0 0-1.72l-14-8.5A1 1 0 0 0 6 3.5Z" fill="#fff" stroke="#1f0f4d" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    </a>
+    <p class="play-label">Play in browser</p>
+    <p class="controls"><kbd>Space</kbd> or click to jump, hold to keep jumping, <kbd>Esc</kbd> to pause.</p>
+    <p class="note">Works on desktop browsers. Touch controls are coming later.</p>
+  </section>
+
+  <section class="shots" aria-labelledby="shots-title">
+    <h2 id="shots-title">Screenshots</h2>
+    <div class="strip">
+      <figure><img src="media/screens/02-gameplay.jpg" alt="The cube running towards spikes" loading="lazy"><figcaption>Tap to jump</figcaption></figure>
+      <figure><img src="media/screens/03-orbs.jpg" alt="Jump orbs above a row of spikes" loading="lazy"><figcaption>Orbs and pads</figcaption></figure>
+      <figure><img src="media/screens/04-gravity.jpg" alt="The cube running on the ceiling" loading="lazy"><figcaption>Gravity portals</figcaption></figure>
+      <figure><img src="media/screens/05-ship.jpg" alt="The ship flying between block columns" loading="lazy"><figcaption>Ship mode</figcaption></figure>
+      <figure><img src="media/screens/06-skins.jpg" alt="Skin picker with bodies and faces" loading="lazy"><figcaption>24 bodies, 12 faces</figcaption></figure>
+      <figure><img src="media/screens/07-settings.jpg" alt="Settings with backgrounds, ground styles and sound" loading="lazy"><figcaption>Pick your world</figcaption></figure>
+      <figure><img src="media/screens/01-main-menu.jpg" alt="Main menu" loading="lazy"><figcaption>Main menu</figcaption></figure>
+      <figure><img src="media/screens/08-level-complete.jpg" alt="Level complete screen" loading="lazy"><figcaption>Level complete</figcaption></figure>
+    </div>
+  </section>
+  <div class="runway" aria-hidden="true"></div>
+  </main>
+
+  <div class="ground" aria-hidden="true"><div class="runner"></div></div>
+
+  <footer class="credits">
+    <h2>Credits</h2>
+    <ul>
+      <li>Art and sound effects: <a href="https://kenney.nl">Kenney</a> (CC0)</li>
+      <li>Trailer music: “As fast as you can” by <a href="https://opengameart.org/content/as-fast-as-you-can">Centurion_of_war</a> (CC0)</li>
+      <li>Font: <a href="https://fonts.google.com/specimen/Lilita+One">Lilita One</a> by Juan Montoreano (SIL Open Font License)</li>
+    </ul>
+    <p class="made">Made with Unity 6. All gameplay logic is built with Visual Scripting graphs, no C# code.</p>
+  </footer>
+</body>
+</html>
