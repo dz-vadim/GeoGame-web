@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GeoGame — уроки</title>
+<style>
+  :root {
+    --bg: #f6f4fb; --card: #ffffff; --ink: #221a3a; --muted: #6b6485; --line: #e3def0;
+    --accent: #6c4ce0; --accent-soft: #efe9ff; --gold: #f4b81c; --red: #d9443f; --green: #2fa35a; --blue: #2f6fd6;
+    --code: #2a2143; --code-ink: #f1edff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #17131f; --card: #211b2e; --ink: #ece8f7; --muted: #a59dbd; --line: #352d47;
+      --accent: #a58cff; --accent-soft: #2d2546; --code: #0f0c16; --code-ink: #e8e2ff;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17131f; --card: #211b2e; --ink: #ece8f7; --muted: #a59dbd; --line: #352d47;
+    --accent: #a58cff; --accent-soft: #2d2546; --code: #0f0c16; --code-ink: #e8e2ff;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 40px 16px 24px; text-align: center; }
+  header h1 { margin: 0 0 6px; font-size: clamp(28px, 5vw, 44px); letter-spacing: -0.5px; }
+  header p { margin: 0 auto; max-width: 720px; color: var(--muted); }
+  main { max-width: 980px; margin: 0 auto; padding: 0 16px 80px; }
+  nav.toc { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; margin: 8px 0 32px; }
+  nav.toc a { display: block; padding: 10px 12px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; color: var(--ink); text-decoration: none; font-size: 15px; }
+  nav.toc a b { color: var(--accent); margin-right: 6px; }
+  nav.toc a:hover { border-color: var(--accent); }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 24px clamp(16px, 3vw, 32px); margin: 0 0 24px; }
+  section h2 { margin: 0 0 4px; font-size: 26px; }
+  section h2 .n { display: inline-block; min-width: 44px; padding: 2px 10px; margin-right: 10px; border-radius: 10px; background: var(--accent); color: #fff; text-align: center; }
+  section h3 { margin: 22px 0 8px; font-size: 18px; }
+  .goal { color: var(--muted); margin: 6px 0 12px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+  .tag { padding: 2px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 14px; }
+  .plan { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin: 12px 0; }
+  .plan div { border: 1px dashed var(--line); border-radius: 10px; padding: 8px 10px; font-size: 14px; }
+  .plan b { display: block; color: var(--accent); }
+  ol, ul { padding-left: 22px; }
+  li { margin: 4px 0; }
+  code, kbd { font: 14px/1.4 ui-monospace, "JetBrains Mono", Menlo, monospace; background: var(--accent-soft); color: var(--ink); padding: 1px 6px; border-radius: 6px; }
+  pre { background: var(--code); color: var(--code-ink); padding: 14px 16px; border-radius: 12px; overflow-x: auto; font: 14px/1.5 ui-monospace, Menlo, monospace; }
+  pre code { background: none; color: inherit; padding: 0; }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 8px 0; }
+  .chain span { padding: 4px 10px; border-radius: 8px; background: #3a3150; color: #fff; font-size: 14px; }
+  .chain span.ev { background: var(--green); }
+  .chain i { color: var(--muted); font-style: normal; }
+  figure { margin: 14px 0; }
+  figure img { display: block; max-width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  figcaption { color: var(--muted); font-size: 14px; margin-top: 6px; }
+  .shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .note { border-left: 4px solid var(--gold); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 12px 12px 0; margin: 14px 0; }
+  .note.red { border-color: var(--red); }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .wrap { overflow-x: auto; }
+  .mat figure img { background: #ece8f5; }
+  .snd { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; margin: 8px 0; }
+  .snd div { border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; font-size: 14px; }
+  .snd audio { width: 100%; height: 32px; margin-top: 4px; }
+  footer { text-align: center; color: var(--muted); font-size: 14px; padding: 20px 16px 40px; }
+  /* Перегляд картинок із масштабуванням */
+  figure { position: relative; }
+  figure img { cursor: zoom-in; }
+  .zbtn { position: absolute; top: 8px; right: 8px; width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--ink); cursor: pointer; opacity: .85; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+  .zbtn:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
+  .zv { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; background: #0f0c16; color: #fff; }
+  .zv[hidden] { display: none; }
+  .zv-stage { position: relative; flex: 1; overflow: hidden; cursor: grab; touch-action: none; }
+  .zv-stage.drag { cursor: grabbing; }
+  .zv-stage img { position: absolute; left: 0; top: 0; transform-origin: 0 0; max-width: none; user-select: none; -webkit-user-drag: none; }
+  .zv-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; padding: 10px 12px; background: rgba(0,0,0,.45); }
+  .zv-bar button { min-width: 44px; height: 40px; padding: 0 12px; border: 1px solid rgba(255,255,255,.25); border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font: 600 18px/1 system-ui, sans-serif; cursor: pointer; }
+  .zv-bar button:hover { background: rgba(255,255,255,.2); }
+  .zv-bar .pct { min-width: 64px; text-align: center; font: 15px/1 ui-monospace, monospace; }
+  .zv-bar .sep { width: 12px; }
+  .zv-cap { padding: 0 16px 10px; text-align: center; font-size: 14px; color: #cfc8e6; background: rgba(0,0,0,.45); }
+  .zv-cap:empty { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>GeoGame — уроки для дитини</h1>
+  <p>17 занять по годині: від куба, що біжить, до власного рівня з меню, скінами й музикою. Уся логіка гри зроблена у Visual Scripting, без C#. З 9-го уроку кожен об'єкт має свій граф: шипи вбивають, батут підкидає, зірка рахується сама.</p>
+</header>
+<main>
+
+<nav class="toc">
+  <a href="#how"><b>?</b>Як користуватися</a>
+  <a href="#mat"><b>★</b>Матеріали й варіанти</a>
+  <a href="#l1"><b>1–3</b>Біг, стрибок, звук</a>
+  <a href="#l4"><b>4</b>Шипи й перезапуск</a>
+  <a href="#l5"><b>5</b>Фініш і «ПЕРЕМОГА!»</a>
+  <a href="#l6"><b>6</b>Будуємо рівень</a>
+  <a href="#l7"><b>7</b>Краса: обертання, вибух</a>
+  <a href="#l8"><b>8</b>Батут</a>
+  <a href="#l9"><b>9</b>Кожному об'єкту свій граф</a>
+  <a href="#l10"><b>10</b>Зірки й лічильник</a>
+  <a href="#l11"><b>11</b>Меню</a>
+  <a href="#l12"><b>12</b>Портал гравітації</a>
+  <a href="#l13"><b>13</b>Рухома пила</a>
+  <a href="#l14"><b>14</b>Корабель</a>
+  <a href="#l15"><b>15</b>Спроби й прогрес</a>
+  <a href="#l16"><b>16</b>Скіни й музика</a>
+  <a href="#l17"><b>17</b>Свій рівень</a>
+</nav>
+
+<section id="how">
+  <h2><span class="n">?</span>Як користуватися</h2>
+  <h3>Дві гілки</h3>
+  <table>
+    <tr><th>Гілка</th><th>Що там</th></tr>
+    <tr><td><code>lessons</code></td><td>Проєкт дитини. Починався з уроків 1–3 (тег <code>lesson-03</code>), далі дитина працює тут сама. Тут одразу лежать <b>усі матеріали курсу</b> (див. «Матеріали й варіанти»). Готові точки цю гілку не змінюють.</td></tr>
+    <tr><td><code>lessons-solutions</code></td><td>Готові результати уроків 4–8 у простих «дитячих» графах (теги <code>lesson-04</code> … <code>lesson-08</code>). Старі теги <code>lesson-09</code> … <code>lesson-15</code> зроблені ще в старому стилі, коли весь код був у гравці. Готові точки для нових уроків 9–16 — в роботі (гілка <code>solutions-v2</code>).</td></tr>
+  </table>
+  <p>В уроках 4–8 нові вузли лягали в граф <code>PlayerRun</code> окремими підписаними групами під вашими чотирма («Рух», «Гравець на землі», «Гравець в повітрі», «Стрибок зі звуком»). З уроку 9 кожен об'єкт має свій граф (<code>Hazard</code>, <code>Pad</code>, <code>Finish</code>, <code>Star</code>, <code>Portal</code>…), а в <code>PlayerRun</code> додаються лише групи, які гравець виконує сам: «Смерть», «Гравітація», «Корабель». Ваші чотири групи не змінювалися.</p>
+
+  <h3>Подивитися готовий урок, не чіпаючи проєкт дитини</h3>
+  <p>Найпростіше — дивитися знімки на цій сторінці. Щоб відкрити готовий урок у Unity, зробіть окрему копію в сусідній папці й відкрийте її через Unity Hub (перший імпорт займе кілька хвилин):</p>
+  <pre><code>cd /home/dz/Projects/Unity/GeoGame
+git worktree add ../GeoGame-lesson07 lesson-07
+# прибрати копію потім:
+git worktree remove ../GeoGame-lesson07</code></pre>
+
+  <h3>Картинки й звуки</h3>
+  <p>Усе, що знадобиться з 1-го по 16-й урок, разом із варіантами на вибір, уже лежить у проєкті дитини. Під час уроків нічого докачувати не треба. Що саме є, видно в розділі <a href="#mat">«Матеріали й варіанти»</a>.</p>
+
+  <h3>Якщо дитина застрягла</h3>
+  <p>Відкрийте знімок графа цього уроку й зберіть вузли разом. Якщо часу немає, можна продовжити з готової точки. Тоді попередня робота дитини залишиться у своїй гілці:</p>
+  <pre><code>git switch lessons
+git commit -am "Моя робота перед уроком 8"     # зберегти, що є
+git switch -c lessons-from-07 lesson-07         # продовжити з готового уроку 7
+git checkout lessons -- Assets/Sprites Assets/Sounds Assets/Music Assets/Fonts   # повернути всі матеріали
+git commit -m "Усі матеріали"</code></pre>
+  <p>У готових точках <code>lesson-NN</code> лежать лише ті картинки, які потрібні саме для того уроку. Дві останні команди повертають повний набір матеріалів.</p>
+
+  <h3>Як побудована година</h3>
+  <div class="plan">
+    <div><b>5 хв</b>Пограти в те, що зробили минулого разу</div>
+    <div><b>10 хв</b>Показати ціль уроку: «а давай зробимо…»</div>
+    <div><b>30 хв</b>Дитина збирає вузли, ви підказуєте</div>
+    <div><b>10 хв</b>Грати, ламати, лагодити</div>
+    <div><b>5 хв</b>Зберегти (Ctrl+S) і коміт</div>
+  </div>
+
+  <h3>Пошук вузлів</h3>
+  <p>Вузли шукають англійською: правий клік по порожньому місці графа і почати друкувати назву. Підказки на сторінці записано так, як їх видно у Visual Scripting: <code>On Trigger Enter 2D</code>, <code>Compare Tag</code>, <code>If</code>. Змінні — це <code>Get Variable</code>/<code>Set Variable</code> типу <b>Object</b> (Variables на об'єкті; щоб дістати змінну гравця з графа іншого об'єкта, у порт об'єкта подаємо <code>Collider</code>), а в уроках 15–16 — <b>Application</b>. Усі написи в Canvas — <b>TextMeshPro</b>: шукайте вузли <code>Text Mesh Pro UGUI</code>.</p>
+  <div class="note">Правило для рівнів: стрибок куба ≈ 4 клітинки. Сходинка, на яку стрибаєш, — щонайменше 5 клітинок завдовжки. Після сходинок — 8 клітинок рівної землі до наступної перешкоди. Більше двох шипів поспіль без батута не ставимо.</div>
+</section>
+
+<section id="mat" class="mat">
+  <h2><span class="n">★</span>Матеріали й варіанти</h2>
+  <p class="goal">Уся графіка й звуки курсу вже лежать у проєкті. Для кожної речі є кілька варіантів, тож дитина може вибрати свій: інший колір куба, блоки, фон, звук стрибка. Графіка й звуки — <a href="https://kenney.nl">Kenney</a> (CC0), музика — Juhani Junkala (CC0), шрифт Lilita One (OFL).</p>
+  <div class="note">Як поміняти: виділити об'єкт (або відкрити префаб) і перетягнути інший спрайт у поле <b>Sprite</b> компонента Sprite Renderer. Зі звуками так само: інший файл у змінну (<code>jumpSound</code>, <code>deathSound</code>…) або в Audio Source. Якщо змінити префаб, оновляться всі його копії на рівні.</div>
+
+  <h3>Гравець — <code>Assets/Sprites/Skins</code></h3>
+  <p>6 кольорів × 4 форми. Обличчя — окремий спрайт поверх тіла (об'єкт <code>Face</code>), тож їх можна поєднувати як завгодно.</p>
+  <figure><img src="img/mat/player.png" alt="Тіла куба" loading="lazy"></figure>
+  <figure><img src="img/mat/faces.png" alt="Обличчя" loading="lazy"></figure>
+
+  <h3>Блоки — <code>Assets/Sprites</code></h3>
+  <p>Для блоків, які розтягують (Draw Mode = Tiled), найкраще підходять <code>block_*</code> і <code>bricks_grey</code>: кожна клітинка — окремий цілий блок, тож будь-яка висота виглядає охайно.</p>
+  <figure><img src="img/mat/blocks.png" alt="Блоки" loading="lazy"></figure>
+  <p>Земля 6 тем. У <code>*_block_top</code> зверху трава/сніг: розтягувати його можна лише в ширину. Для високого блока ставлять <code>*_block_top</code> зверху (висота 1), а під ним <code>*_block_center</code>.</p>
+  <figure><img src="img/mat/terrain.png" alt="Земля" loading="lazy"></figure>
+  <p>Платформи в повітрі: лівий край, середина, правий край.</p>
+  <figure><img src="img/mat/platforms.png" alt="Платформи" loading="lazy"></figure>
+
+  <h3>Перешкоди й предмети</h3>
+  <p>Шипи, лава, пила (урок 13), батут (урок 8; <code>spring_out</code> — розтиснутий), зірка (урок 10), кристали, прапорець фінішу, двері (теж можуть бути фінішем), портали (уроки 12, 14), корабель (урок 14).</p>
+  <figure><img src="img/mat/objects.png" alt="Предмети" loading="lazy"></figure>
+
+  <h3>Фони</h3>
+  <p>Поміняти можна в об'єкті <code>Background</code> усередині <code>Main Camera</code>.</p>
+  <figure><img src="img/mat/backgrounds.png" alt="Фони" loading="lazy"></figure>
+
+  <h3>Інтерфейс — <code>Assets/Sprites/UI</code></h3>
+  <p>Кнопки, іконки, смуга прогресу (урок 15), зірки для меню.</p>
+  <figure><img src="img/mat/ui.png" alt="Інтерфейс" loading="lazy"></figure>
+
+  <h3>Звуки — <code>Assets/Sounds</code> і музика — <code>Assets/Music</code></h3>
+  <p>Кожен звук має три стилі: звичайний (<code>sfx_</code>), ретро (<code>retro_</code>) і м'який (<code>soft_</code>).</p>
+  <div class="snd">
+    <div><b>Стрибок</b> · <code>sfx_jump</code><audio controls preload="none" src="audio/sfx_jump.ogg"></audio></div>
+    <div><b>Стрибок</b> · <code>retro_jump</code><audio controls preload="none" src="audio/retro_jump.ogg"></audio></div>
+    <div><b>Стрибок</b> · <code>soft_jump</code><audio controls preload="none" src="audio/soft_jump.ogg"></audio></div>
+    <div><b>Батут (урок 8)</b> · <code>sfx_jump-high</code><audio controls preload="none" src="audio/sfx_jump-high.ogg"></audio></div>
+    <div><b>Смерть (урок 7)</b> · <code>sfx_hurt</code><audio controls preload="none" src="audio/sfx_hurt.ogg"></audio></div>
+    <div><b>Смерть (урок 7)</b> · <code>retro_death</code><audio controls preload="none" src="audio/retro_death.ogg"></audio></div>
+    <div><b>Смерть (урок 7)</b> · <code>soft_death</code><audio controls preload="none" src="audio/soft_death.ogg"></audio></div>
+    <div><b>Фініш (урок 7)</b> · <code>sfx_magic</code><audio controls preload="none" src="audio/sfx_magic.ogg"></audio></div>
+    <div><b>Фініш (урок 7)</b> · <code>retro_win</code><audio controls preload="none" src="audio/retro_win.ogg"></audio></div>
+    <div><b>Фініш (урок 7)</b> · <code>soft_win</code><audio controls preload="none" src="audio/soft_win.ogg"></audio></div>
+    <div><b>Зірки, кнопки (уроки 10, 16)</b> · <code>sfx_coin</code><audio controls preload="none" src="audio/sfx_coin.ogg"></audio></div>
+    <div><b>Зірки, кнопки (уроки 10, 16)</b> · <code>sfx_gem</code><audio controls preload="none" src="audio/sfx_gem.ogg"></audio></div>
+    <div><b>Зірки, кнопки (уроки 10, 16)</b> · <code>ui_click</code><audio controls preload="none" src="audio/ui_click.ogg"></audio></div>
+    <div><b>Музика</b> · <code>menu</code> (Меню)<audio controls preload="none" src="audio/menu.ogg"></audio></div>
+    <div><b>Музика</b> · <code>level1</code> (Рівень 1)<audio controls preload="none" src="audio/level1.ogg"></audio></div>
+    <div><b>Музика</b> · <code>level2</code> (Рівень 2)<audio controls preload="none" src="audio/level2.ogg"></audio></div>
+    <div><b>Музика</b> · <code>level3</code> (Рівень 3)<audio controls preload="none" src="audio/level3.ogg"></audio></div>
+  </div>
+</section>
+
+<section id="l1">
+  <h2><span class="n">1–3</span>Біг, стрибок, звук</h2>
+  <p class="goal">Уже зроблено разом (тег <code>lesson-03</code>): куб біжить, стрибає тільки з землі й грає звук стрибка. Камера стежить за кубом.</p>
+  <div class="tags"><span class="tag">On Fixed Update</span><span class="tag">On Update</span><span class="tag">If</span><span class="tag">змінні speed, jumpVelocity, isGrounded, isAlive</span><span class="tag">Play One Shot</span></div>
+  <p>Ці групи є основою для всіх наступних уроків. Зміна <code>isAlive</code> у групі «Рух» уже вміє зупиняти біг, а <code>isGrounded</code> вирішує, чи можна стрибати.</p>
+</section>
+
+<section id="l4">
+  <h2><span class="n">4</span>Шипи: смерть і перезапуск</h2>
+  <p class="goal">Ціль: торкнувся шипа — рівень починається спочатку.</p>
+  <div class="tags"><span class="tag">тригер</span><span class="tag">тег (Tag)</span><span class="tag">If</span><span class="tag">Load Scene</span></div>
+  <h3>Сцена</h3>
+  <ol>
+    <li>Створити порожній об'єкт <code>Level</code> — у ньому житимуть усі перешкоди.</li>
+    <li>Перетягнути префаб <code>Prefabs/Spike</code> у <code>Level</code>. Позиції: x = 12, 22, 23, 34, 35; y = 0.5.</li>
+    <li>Показати дитині: у шипа <code>Box Collider 2D</code> має галочку <b>Is Trigger</b> (крізь нього можна пройти, але гра дізнається про дотик), а <b>Tag</b> = <code>Hazard</code> («небезпека»).</li>
+  </ol>
+  <h3>Граф (PlayerRun), нова група «Смерть від шипів»</h3>
+  <div class="chain"><span class="ev">On Trigger Enter 2D</span><i>→</i><span>Compare Tag «Hazard»</span><i>→</i><span>If</span><i>→ True →</i><span>Set Variable isAlive = false</span><i>→</i><span>Load Scene «Level1»</span></div>
+  <p>Вихід <b>Collider</b> із події йде у вхід <code>Compare Tag</code>, а результат — в умову <code>If</code>. Для <code>false</code> — вузол <code>Boolean</code> без галочки.</p>
+  <figure><img src="img/l04-graph.png" alt="Граф: смерть від шипів" loading="lazy"><figcaption>Готова група уроку 4</figcaption></figure>
+  <figure><img src="img/l04-scene.png" alt="Шипи на рівні" loading="lazy"><figcaption>Шипи на землі (вигляд у Scene)</figcaption></figure>
+  <h3>Перевірка</h3>
+  <ul><li>Не натискати нічого: куб доїжджає до першого шипа, і рівень починається знову.</li><li>Зі стрибками можна пройти всі шипи.</li></ul>
+  <div class="note">Питання дитині: «Чому шип — тригер, а земля — ні?» (Об землю треба стукатися, а крізь шип — ні, нам треба лише знати, що доторкнулися.)</div>
+</section>
+
+<section id="l5">
+  <h2><span class="n">5</span>Фініш і «ПЕРЕМОГА!»</h2>
+  <p class="goal">Ціль: добіг до прапорця — куб зупиняється, на екрані великий напис «ПЕРЕМОГА!».</p>
+  <div class="tags"><span class="tag">UI Text</span><span class="tag">Set Active</span><span class="tag">змінна-посилання на об'єкт</span></div>
+  <h3>Сцена</h3>
+  <ol>
+    <li>Префаб <code>Prefabs/Finish</code> поставити на x = 60 (його Tag = <code>Finish</code>).</li>
+    <li>На <code>Canvas</code>: <b>Canvas Scaler → Scale With Screen Size</b>, 1920×1080.</li>
+    <li>Canvas → UI → Legacy → <b>Text</b>, назва <code>WinText</code>: текст «ПЕРЕМОГА!», розмір 140, жовтий колір, додати компонент <b>Outline</b>. Вимкнути галочку біля назви об'єкта: напис схований.</li>
+    <li>У Variables гравця додати <code>winText</code> (тип GameObject) і перетягнути туди <code>WinText</code>.</li>
+  </ol>
+  <h3>Граф, група «Фініш»</h3>
+  <div class="chain"><span class="ev">On Trigger Enter 2D</span><i>→</i><span>Compare Tag «Finish»</span><i>→</i><span>If</span><i>→</i><span>Set Variable speed = 0</span><i>→</i><span>Set Active (winText, ✓)</span></div>
+  <figure><img src="img/l05-graph.png" alt="Граф фінішу" loading="lazy"></figure>
+  <figure><img src="img/l05-win.png" alt="Екран перемоги" loading="lazy"><figcaption>Так виглядає перемога</figcaption></figure>
+  <div class="note">Чому <code>speed = 0</code>, а не <code>isAlive = false</code>? Група «Рух» щокадру ставить швидкість = speed, тож speed = 0 зупиняє куб. А <code>isAlive = false</code> просто перестане оновлювати швидкість, і куб поїде далі.</div>
+</section>
+
+<section id="l6">
+  <h2><span class="n">6</span>Будуємо рівень</h2>
+  <p class="goal">Ціль: власний рівень зі сходинками й шипами. Урок без графів: тільки сцена й тестування.</p>
+  <div class="tags"><span class="tag">префаб</span><span class="tag">Tiled-спрайт</span><span class="tag">гра-тестування</span></div>
+  <h3>Префаб Block</h3>
+  <ol>
+    <li>Новий об'єкт <code>Block</code>: <b>Sprite Renderer</b> зі спрайтом <code>block_blue</code> (або будь-який <code>block_*</code>, <code>bricks_grey</code>), <b>Draw Mode = Tiled</b>, Size 1×1.</li>
+    <li><b>Box Collider 2D</b> з галочкою <b>Auto Tiling</b>: колайдер сам розтягується разом зі спрайтом.</li>
+    <li>Перетягнути в <code>Prefabs</code>. Довгий блок — змінити <b>Size → Width</b>, вищий — <b>Height</b>.</li>
+    <li>Можна зробити кілька префабів різних кольорів, і дитина сама вибере, які їй подобаються.</li>
+  </ol>
+  <div class="note">Не беріть для високих блоків <code>terrain_*_block_top</code>: у режимі Tiled трава повторюється в кожному рядку, і блок висотою 2 виглядає як два шари один на одному. Готова точка <code>lesson-06</code> ще використовує <code>terrain_purple_block_top</code> — дитина на уроці вибрала <code>block_blue</code>.</div>
+  <div class="note">Ставте все по сітці. Блок 1×1 стоїть рівно, коли y = 0.5, 1.5, 2.5…, шипи — на y = 0.5. Найпростіше — вписати точні числа в <b>Transform → Position</b> в Inspector.</div>
+  <h3>Рівень у готовій точці</h3>
+  <table>
+    <tr><th>x</th><th>Що</th></tr>
+    <tr><td>44–50</td><td>Блок висотою 1</td></tr>
+    <tr><td>50–56</td><td>Блок висотою 2 (сходинка)</td></tr>
+    <tr><td>66, 67</td><td>Два шипи</td></tr>
+    <tr><td>78–84</td><td>Блок висотою 1</td></tr>
+    <tr><td>93; 102, 103</td><td>Шип; два шипи</td></tr>
+    <tr><td>115</td><td>Фініш (перенести з 60)</td></tr>
+  </table>
+  <figure><img src="img/l06-scene.png" alt="Сходинки" loading="lazy"><figcaption>Сходинки й шипи</figcaption></figure>
+  <div class="note">Нехай дитина сама поставить перешкоди й одразу перевірить, чи можна пройти. Якщо ні — посуньте. Це й є робота геймдизайнера. Правило 4 / 5 / 8 клітинок — у розділі «Як користуватися».</div>
+</section>
+
+<section id="l7">
+  <h2><span class="n">7</span>Краса: обертання, вибух, звуки</h2>
+  <p class="goal">Ціль: куб крутиться в стрибку; від шипа розлітається на квадратики зі звуком, а на фініші грає «чарівний» звук.</p>
+  <div class="tags"><span class="tag">Transform Rotate</span><span class="tag">Time.deltaTime</span><span class="tag">Particle System</span><span class="tag">Wait For Seconds</span><span class="tag">And</span></div>
+  <h3>Сцена й змінні</h3>
+  <ol>
+    <li>У Player додати дочірній <b>Particle System</b> <code>Boom</code>:
+      <ul>
+        <li>Looping вимкнено, Play On Awake вимкнено.</li>
+        <li>Start Speed 4–10, Start Size 0.2–0.4, колір — випадковий між синім і жовтим, Gravity Modifier 1.5, Simulation Space = World.</li>
+        <li>Emission: Rate 0, один Burst на 40 частинок. Shape = Circle.</li>
+        <li>Renderer: матеріал <code>Sprite-Unlit-Default</code> (виходять квадратики, як у Geometry Dash), Order in Layer 20.</li>
+      </ul>
+    </li>
+    <li>Змінні гравця:
+      <ul>
+        <li><code>visual</code> (GameObject Visual);</li>
+        <li><code>spinSpeed</code> = −360;</li>
+        <li><code>boom</code> (Boom);</li>
+        <li><code>deathSound</code> = sfx_hurt;</li>
+        <li><code>winSound</code> = sfx_magic.</li>
+        <li>Звуки можна вибрати інші: <code>retro_death</code>/<code>soft_death</code>, <code>retro_win</code>/<code>soft_win</code> (див. «Матеріали»). Колір частинок теж на смак.</li>
+      </ul>
+    </li>
+  </ol>
+  <h3>Нова група «Крутимось у стрибку»</h3>
+  <div class="chain"><span class="ev">On Update</span><i>→</i><span>If isGrounded</span><i>True →</i><span>Set Local Euler Angles (visual) = 0,0,0</span></div>
+  <div class="chain"><i>False →</i><span>Rotate (visual), Z = spinSpeed × Get Delta Time</span></div>
+  <figure><img src="img/l07-spin-graph.png" alt="Обертання" loading="lazy"></figure>
+  <h3>Смерть стає красивою</h3>
+  <p>У ланцюжок смерті після <code>Set isAlive = false</code> вставити кроки:</p>
+  <div class="chain"><span>Set Simulated = false</span><i>→</i><span>Set Active (visual, ✗)</span><i>→</i><span>Play (boom)</span><i>→</i><span>Play One Shot (deathSound)</span><i>→</i><span>Wait For Seconds 1</span><i>→</i><span>Load Scene</span></div>
+  <ul>
+    <li>У події <code>On Trigger Enter 2D</code> поставити галочку <b>Coroutine</b>, інакше <code>Wait For Seconds</code> не працюватиме.</li>
+    <li>В умову додати <code>And</code> з <code>isAlive</code>: смерть не спрацює двічі, якщо куб зачепить два шипи.</li>
+  </ul>
+  <figure><img src="img/l07-death-graph.png" alt="Красива смерть" loading="lazy"></figure>
+  <p>У «Фініш» після <code>Set Active</code> додати <code>Play One Shot (winSound)</code>.</p>
+  <div class="shots">
+    <figure><img src="img/l07-spin.png" alt="Куб крутиться" loading="lazy"><figcaption>Обертання в стрибку</figcaption></figure>
+    <figure><img src="img/l07-boom.png" alt="Вибух" loading="lazy"><figcaption>Розлетівся на квадратики</figcaption></figure>
+  </div>
+  <div class="note">Якщо не встигаєте, урок легко ділиться навпіл: спершу обертання, а наступного разу вибух і звуки.</div>
+</section>
+
+<section id="l8">
+  <h2><span class="n">8</span>Батут</h2>
+  <p class="goal">Ціль: пружина підкидає куб дуже високо — на стіну, через яму з шипами.</p>
+  <div class="tags"><span class="tag">новий тег Pad</span><span class="tag">Set Linear Velocity Y</span></div>
+  <h3>Ассети</h3>
+  <p>Уже в проєкті: <code>spring.png</code>, <code>spring_out.png</code>, <code>sfx_jump-high.ogg</code>.</p>
+  <h3>Сцена</h3>
+  <ol>
+    <li>Префаб <code>Pad</code>:
+      <ul>
+        <li>спрайт <code>spring</code>, ширина ≈ 1 клітинка;</li>
+        <li><b>Box Collider 2D</b> з <b>Is Trigger</b>;</li>
+        <li>новий Tag <code>Pad</code>.</li>
+      </ul>
+    </li>
+    <li>Рівень:
+      <ul>
+        <li>батут на x = 124, одразу за ним стіна-блок 127–133 висотою 3;</li>
+        <li>батут на x = 145, за ним шипи на 147, 148, 149;</li>
+        <li>фініш перенести на 162.</li>
+      </ul>
+    </li>
+    <li>Змінні: <code>padVelocity</code> = 28, <code>padSound</code> = sfx_jump-high.</li>
+  </ol>
+  <h3>Граф, група «Батут»</h3>
+  <div class="chain"><span class="ev">On Trigger Enter 2D</span><i>→</i><span>Compare Tag «Pad»</span><i>→</i><span>If</span><i>→</i><span>Set Linear Velocity Y = padVelocity</span><i>→</i><span>Set isGrounded = false</span><i>→</i><span>Play One Shot (padSound)</span></div>
+  <figure><img src="img/l08-graph.png" alt="Граф батута" loading="lazy"></figure>
+  <figure><img src="img/l08-pad.png" alt="Політ із батута" loading="lazy"><figcaption>Батут закидає куб на стіну</figcaption></figure>
+  <div class="note">Експеримент: поміняти <code>padVelocity</code> і подивитися, що буде. З 24 куб у наших тестах приземлявся просто на шипи, тому в готовій точці стоїть 28.</div>
+</section>
+
+<section id="l9">
+  <h2><span class="n">9</span>Кожному об'єкту свій граф</h2>
+  <p class="goal">Уже зроблено разом (20.10): код, що стосується шипів, батута й фінішу, переїхав з гравця на самі об'єкти. Тепер кожен об'єкт сам знає, що він робить із гравцем.</p>
+  <div class="tags"><span class="tag">Script Machine на об'єкті</span><span class="tag">Tag Player</span><span class="tag">Custom Event</span><span class="tag">змінні на об'єкті</span></div>
+  <h3>Як це влаштовано тепер</h3>
+  <table>
+    <tr><th>Об'єкт</th><th>Граф</th><th>Що робить</th></tr>
+    <tr><td><code>spikes</code>, <code>wall</code> (префаби)</td><td><code>Hazard</code></td><td>Гравець торкнувся, і об'єкт каже йому «Смерть»</td></tr>
+    <tr><td><code>spring</code></td><td><code>Pad</code></td><td>Підкидає гравця на <code>power</code>, грає <code>sound</code>, міняє спрайт на <code>pressed</code></td></tr>
+    <tr><td><code>Finish</code></td><td><code>Finish</code></td><td>Зупиняє гравця (<code>speed</code> = 0) і вмикає <code>winText</code></td></tr>
+    <tr><td><code>Player</code></td><td><code>PlayerRun</code></td><td>Рух, стрибок, кувирок і група «Смерть», яка чекає повідомлення</td></tr>
+  </table>
+  <div class="chain"><span class="ev">On Trigger Enter 2D</span><i>→</i><span>Compare Tag «Player»</span><i>→</i><span>If</span><i>→</i><span>Trigger Custom Event «Смерть» (кому: Collider)</span></div>
+  <div class="chain"><span class="ev">Custom Event «Смерть»</span><i>→</i><span>isAlive = false</span><i>→</i><span>вибух, звук</span><i>→</i><span>Wait For Seconds 2</span><i>→</i><span>Load Scene</span></div>
+  <div class="shots">
+  <figure><img src="img/n09-hazard.png" alt="Граф Hazard" loading="lazy"><figcaption>Hazard — на шипах і стіні</figcaption></figure>
+  <figure><img src="img/n09-finish.png" alt="Граф Finish" loading="lazy"><figcaption>Finish — на фініші</figcaption></figure>
+  </div>
+  <figure><img src="img/n09-pad.png" alt="Граф Pad" loading="lazy"><figcaption>Pad — на батуті: power, sound і pressed — змінні самого батута</figcaption></figure>
+  <figure><img src="img/n09-death.png" alt="Група Смерть у PlayerRun" loading="lazy"><figcaption>PlayerRun, група «Смерть»: чекає Custom Event від перешкоди</figcaption></figure>
+  <p>Шаблон для всіх нових об'єктів однаковий: <b>On Trigger Enter 2D → Compare Tag «Player» → If → дія</b>. Вихід <code>Collider</code> — це гравець, якого торкнулися. Від нього беремо його змінні (<code>Get/Set Variable</code> типу Object, порт об'єкта = Collider) або надсилаємо йому подію.</p>
+  <div class="note">Дві дороги, і обидві правильні. Якщо треба просто змінити число гравця (батут, зірка), об'єкт змінює його сам через Collider. Якщо гравець має щось <i>зробити</i> (померти, стати кораблем), об'єкт надсилає <b>Custom Event</b>, а що саме робити, вирішує граф гравця.</div>
+  <div class="note red">Custom Event, після якого йде <code>Wait For Seconds</code>, має стояти з галочкою <b>Coroutine</b>. Без неї очікування мовчки не працює, і помилки в консолі немає.</div>
+  <p>Чим це краще: нова перешкода — це будь-який спрайт + тригер + граф <code>Hazard</code>. У гравця нічого міняти не треба.</p>
+</section>
+
+<section id="l10">
+  <h2><span class="n">10</span>Зірки й лічильник</h2>
+  <p class="goal">Ціль: зірки можна збирати. Взяв зірку — вона зникає з дзвоном, а число в кутку екрана збільшується.</p>
+  <div class="tags"><span class="tag">префаб зі своїм графом</span><span class="tag">On Start + Find</span><span class="tag">Add</span><span class="tag">To String</span><span class="tag">Set text (TextMeshPro)</span><span class="tag">Destroy</span></div>
+  <h3>Ассети</h3>
+  <p>Уже в проєкті: <code>star.png</code>, <code>sfx_coin.ogg</code>. Замість зірки можна збирати кристали <code>gem_yellow</code>/<code>gem_red</code> (звук <code>sfx_gem</code>).</p>
+  <h3>Сцена</h3>
+  <ol>
+    <li>Гравцю — нова змінна <code>coins</code> (Integer, 0). Лічильник живе на гравці, а не на зірці, бо зірки зникають.</li>
+    <li>У Canvas — текст <b>UI → Text - TextMeshPro</b> з назвою <code>starText</code> і текстом «0», угорі екрана. Поруч — Image зі спрайтом зірки.</li>
+    <li>Префаб <code>star</code>:
+      <ul>
+        <li>спрайт <code>star</code>;</li>
+        <li><b>Circle Collider 2D</b> з <b>Is Trigger</b>, радіус 0.35;</li>
+        <li><b>Variables</b>: <code>starText</code> (тип <b>Text Mesh Pro UGUI</b>), <code>starSound</code> = sfx_coin;</li>
+        <li><b>Script Machine</b> з новим графом <code>Scripts/Star</code>.</li>
+      </ul>
+    </li>
+    <li>Зірки ставимо там, де куб пролітає: над шипами, на сходинці, на дузі батута.</li>
+  </ol>
+  <h3>Граф Star, група «Знайти напис»</h3>
+  <p>Префаб не може тримати посилання на об'єкт зі сцени, тому кожна зірка на старті сама знаходить напис за назвою.</p>
+  <div class="chain"><span class="ev">On Start</span><i>→</i><span>Game Object Find «starText»</span><i>→</i><span>Set Variable starText (This)</span></div>
+  <h3>Граф Star, група «Зірка»</h3>
+  <div class="chain"><span class="ev">On Trigger Enter 2D</span><i>→</i><span>Compare Tag «Player»</span><i>→</i><span>If</span><i>→</i><span>Play One Shot (Collider, starSound)</span><i>→</i><span>Set coins (гравець) = coins + 1</span><i>→</i><span>Set text (starText) = coins → To String</span><i>→</i><span>Destroy (This)</span></div>
+  <figure><img src="img/n10-star.png" alt="Граф Star" loading="lazy"><figcaption>Граф Star цілком: угорі — пошук напису, внизу — сама зірка</figcaption></figure>
+  <ul>
+    <li>Звук граємо на гравці: <code>Audio Source: Play One Shot</code>, ціль — <code>Collider</code>. Якщо грати на самій зірці, звук обірветься, бо вона одразу зникає.</li>
+    <li><code>Set Variable coins</code> бере гравця з правого виходу <code>Play One Shot</code>, як на батуті <code>isGrounded</code> бере його з <code>Set Linear Velocity Y</code>. Так не треба тягнути ще одну довгу лінію від Collider.</li>
+    <li><code>Get Variable coins</code> стоїть під ланцюжком і бере гравця прямо з <b>Collider</b>.</li>
+    <li><code>Get Variable starText</code> ставимо <b>над</b> <code>Set text</code>, а <code>To String</code> — під ним: тоді лінії не перехрещуються.</li>
+    <li><code>Destroy</code> — останнім, бо після нього граф зірки вже не працює.</li>
+  </ul>
+  <div class="note red">Дві пастки, на які ми вже наступили:
+    <ul>
+      <li>Число не можна подати прямо в текст: помилка <i>Cannot convert from 'System.Single' to 'System.String'</i>. Між числом і <code>Set text</code> ставимо <code>To String</code>.</li>
+      <li>Текст у Canvas — це <b>Text Mesh Pro UGUI</b>. Вузол <code>Text Mesh: Set Text</code> і тип <code>Text Mesh Pro</code> (без UGUI) — для тексту в самій сцені, з ними буде <i>Missing target object</i> або <i>There is no 'TextMesh' attached</i>. У пошуку вузлів набираємо <code>Text Mesh Pro UGUI</code> → <code>Set text</code>.</li>
+    </ul>
+  </div>
+  <figure><img src="img/l09-win.png" alt="Лічильник зірок" loading="lazy"><figcaption>Так виглядав лічильник у першій версії. Можна зробити «Зірки: 3» вузлом String Concat</figcaption></figure>
+</section>
+
+<section id="l11">
+  <h2><span class="n">11</span>Меню</h2>
+  <p class="goal">Ціль: гра починається з меню. Натискаєш «ГРАТИ» — запускається рівень. Після перемоги через 3 секунди — знову меню.</p>
+  <div class="tags"><span class="tag">нова сцена</span><span class="tag">Button</span><span class="tag">On Button Click</span><span class="tag">Build Settings</span><span class="tag">Coroutine</span></div>
+  <h3>Сцена Menu</h3>
+  <ol>
+    <li>File → New Scene, зберегти як <code>Scenes/Menu</code>.</li>
+    <li>Камера: Orthographic, Size 6. Дочірній <code>Background</code> з фоном пагорбів, як у рівні.</li>
+    <li>UI:
+      <ul>
+        <li><code>Canvas</code> (Scale With Screen Size 1920×1080) і <code>EventSystem</code> (з Input System UI Input Module);</li>
+        <li>заголовок «GEO GAME» (Text - TextMeshPro) — жовтий з обводкою;</li>
+        <li>кнопка <code>PlayButton</code> «ГРАТИ».</li>
+      </ul>
+    </li>
+    <li>На кнопку — <b>Script Machine</b> з новим графом <code>Scripts/PlayButton</code>. Граф живе на самій кнопці, як і всі наші графи.</li>
+    <li>File → Build Profiles / Build Settings: сцени <code>Menu</code> (перша) і <code>Level1</code>.</li>
+  </ol>
+  <div class="chain"><span class="ev">On Button Click</span><i>→</i><span>Load Scene «Level1»</span></div>
+  <figure><img src="img/n11-play.png" alt="Граф кнопки" loading="lazy"></figure>
+  <h3>Повернення в меню: граф Finish</h3>
+  <p>Відкриваємо граф <code>Finish</code> на фініші. В <code>On Trigger Enter 2D</code> ставимо галочку <b>Coroutine</b>, а в кінець ланцюжка дописуємо:</p>
+  <div class="chain"><span>… winText ✓</span><i>→</i><span>Wait For Seconds 3</span><i>→</i><span>Load Scene «Menu»</span></div>
+  <figure><img src="img/n11-finish.png" alt="Граф Finish з поверненням у меню" loading="lazy"></figure>
+  <figure><img src="img/l10-menu.png" alt="Меню" loading="lazy"><figcaption>Меню гри</figcaption></figure>
+  <div class="note">Щоб грати з меню, у редакторі відкривайте сцену <code>Menu</code> перед натисканням Play.</div>
+</section>
+
+<section id="l12">
+  <h2><span class="n">12</span>Портал гравітації</h2>
+  <p class="goal">Ціль: пролетів через фіолетовий портал — куб падає на стелю й біжить догори дриґом. Другий портал повертає все назад.</p>
+  <div class="tags"><span class="tag">Custom Event гравцю</span><span class="tag">змінна з назвою події</span><span class="tag">множення на −1</span><span class="tag">Gravity Scale</span></div>
+  <h3>Ассети</h3>
+  <p>Уже в проєкті: <code>portal_purple.png</code>, <code>sfx_magic.ogg</code>.</p>
+  <h3>Сцена</h3>
+  <ol>
+    <li>Префаб <code>GravityPortal</code>:
+      <ul>
+        <li>спрайт <code>portal_purple</code>;</li>
+        <li><b>Box Collider 2D</b> 1×3 з <b>Is Trigger</b>;</li>
+        <li><b>Variables</b>: <code>message</code> (String) = «Гравітація», <code>sound</code> = sfx_magic;</li>
+        <li><b>Script Machine</b> з новим графом <code>Scripts/Portal</code>.</li>
+      </ul>
+    </li>
+    <li>Продовжуємо рівень за фінішем (фініш переносимо далі):
+      <ul>
+        <li>стеля — довгий блок на висоті y = 7, приблизно 40 клітинок;</li>
+        <li>перший портал біля землі (y = 1.5) на початку стелі;</li>
+        <li>другий портал біля стелі (y = 5.5) в її кінці;</li>
+        <li>на стелі — 2–3 шипи, повернуті на 180° (y = 6.5). Це звичайний префаб <code>spikes</code>, тож вони вже вбивають.</li>
+      </ul>
+    </li>
+  </ol>
+  <h3>Граф Portal (на порталі)</h3>
+  <p>Портал нічого не знає про гравітацію. Він лише каже гравцю слово зі своєї змінної <code>message</code>. Тому той самий граф знадобиться ще для двох порталів в уроці 14.</p>
+  <div class="chain"><span class="ev">On Trigger Enter 2D</span><i>→</i><span>Compare Tag «Player»</span><i>→</i><span>If</span><i>→</i><span>Play One Shot (Collider, sound)</span><i>→</i><span>Trigger Custom Event (кому: гравець з виходу Play One Shot, назва: Get Variable message)</span></div>
+  <figure><img src="img/n12-portal.png" alt="Граф Portal" loading="lazy"><figcaption><code>message</code> стоїть над вузлом, бо вхід «назва» верхній, а гравець приходить знизу збоку</figcaption></figure>
+  <h3>Граф PlayerRun, нова група «Гравітація»</h3>
+  <div class="chain"><span class="ev">Custom Event «Гравітація»</span><i>→</i><span>Set Gravity Scale = Gravity Scale × −1</span><i>→</i><span>Set jumpVelocity = jumpVelocity × −1</span></div>
+  <figure><img src="img/n12-gravity.png" alt="Група Гравітація" loading="lazy"></figure>
+  <div class="note">Чарівне в цьому уроці — множення на −1: «вниз» стає «вгору», а стрибок теж розвертається. Нехай дитина вгадає, що буде, якщо забути розвернути <code>jumpVelocity</code>.</div>
+  <div class="note red">Назва в Custom Event гравця має збігатися з <code>message</code> на порталі літера в літеру, разом з великою літерою. Інакше портал «кричить», а гравець не чує, і помилки немає.</div>
+  <figure><img src="img/l11-ceiling.png" alt="Біг по стелі" loading="lazy"><figcaption>Куб біжить по стелі</figcaption></figure>
+</section>
+
+<section id="l13">
+  <h2><span class="n">13</span>Рухома пила</h2>
+  <p class="goal">Ціль: пила крутиться й їздить туди-сюди. Нових вузлів немає — тільки вікно Animation і готовий граф <code>Hazard</code>.</p>
+  <div class="tags"><span class="tag">Animation</span><span class="tag">ключові кадри</span><span class="tag">Animator</span><span class="tag">знову граф Hazard</span></div>
+  <h3>Ассети</h3>
+  <p>Уже в проєкті: <code>saw.png</code>.</p>
+  <h3>Кроки</h3>
+  <ol>
+    <li>Порожній об'єкт <code>MovingSaw</code>, у ньому дочірній <code>Saw</code>:
+      <ul>
+        <li>спрайт <code>saw</code>;</li>
+        <li><b>Circle Collider 2D</b> з <b>Is Trigger</b>;</li>
+        <li><b>Script Machine</b> з графом <code>Hazard</code> — той самий, що на шипах. Пила вже вбиває!</li>
+      </ul>
+    </li>
+    <li>Виділити <code>MovingSaw</code>, Window → Animation → Animation → <b>Create</b> → <code>Animations/SawMove</code>.</li>
+    <li>Натиснути червону кнопку запису:
+      <ul>
+        <li>кадр 0:00 — Saw x = 0, обертання Z = 0;</li>
+        <li>кадр 2:00 — x = 2;</li>
+        <li>кадр 4:00 — x = 0, обертання Z = −1440.</li>
+      </ul>
+    </li>
+    <li>Перевірити, що в кліпі стоїть <b>Loop Time</b>. Зробити з <code>MovingSaw</code> префаб і поставити 2 пили на рівні, між ними ≥ 16 клітинок.</li>
+  </ol>
+  <figure><img src="img/l12-animation.png" alt="Вікно Animation" loading="lazy"><figcaption>Ключові кадри SawMove</figcaption></figure>
+  <figure><img src="img/l12-saw.png" alt="Пила на рівні" loading="lazy"></figure>
+  <div class="note">Тут добре видно, навіщо був урок 9: раніше пилу треба було б додавати в граф гравця, а тепер вона приносить свою поведінку з собою.</div>
+  <div class="note red">Пила має їздити повільно (2 клітинки за 4 секунди). Ми перевіряли швидшу пилу: вона їде в той самий бік, що й куб, і він приземляється просто на неї.</div>
+</section>
+
+<section id="l14">
+  <h2><span class="n">14</span>Корабель</h2>
+  <p class="goal">Ціль: помаранчевий портал перетворює куб на корабель. Тримаєш кнопку — летиш угору, відпускаєш — падаєш. Зелений портал повертає куб.</p>
+  <div class="tags"><span class="tag">«тримати», а не «натиснути»</span><span class="tag">Add Force</span><span class="tag">той самий граф Portal</span><span class="tag">Custom Event</span></div>
+  <h3>Ассети</h3>
+  <p>Уже в проєкті: <code>ship_blue.png</code>, <code>portal_orange.png</code>, <code>portal_green.png</code>.</p>
+  <h3>Сцена й змінні</h3>
+  <ol>
+    <li>У Player — дочірній <code>Ship</code> зі спрайтом <code>ship_blue</code>, повернутий на −90° (носом управо). Вимкнений.</li>
+    <li>Змінні гравця: <code>ship</code> (Ship), <code>isShip</code> = false, <code>shipPower</code> = 45.</li>
+    <li>Два нові портали — копії <code>GravityPortal</code> з іншим спрайтом і іншим <code>message</code>:
+      <ul>
+        <li><code>ShipPortal</code>: <code>portal_orange</code>, message = «Корабель»;</li>
+        <li><code>CubePortal</code>: <code>portal_green</code>, message = «Куб», розтягнутий на всю висоту.</li>
+      </ul>
+      Граф у них той самий — <code>Portal</code>. Нічого нового в ньому робити не треба.
+    </li>
+    <li>Рівень: портал корабля біля землі, далі стеля на висоті 8 і стовпи-блоки по черзі знизу (висота 4) і згори (від 4.5 до 8) кожні 8 клітинок, наприкінці — портал куба, потім фініш.</li>
+  </ol>
+  <h3>Граф PlayerRun, групи «Стати кораблем» і «Стати кубом»</h3>
+  <div class="chain"><span class="ev">Custom Event «Корабель»</span><i>→</i><span>isShip = true</span><i>→</i><span>Gravity Scale = 2</span><i>→</i><span>Set Active visual ✗</span><i>→</i><span>Set Active ship ✓</span></div>
+  <div class="chain"><span class="ev">Custom Event «Куб»</span><i>→</i><span>isShip = false</span><i>→</i><span>Gravity Scale = 7</span><i>→</i><span>Set Active visual ✓</span><i>→</i><span>Set Active ship ✗</span></div>
+  <figure><img src="img/n14-modes.png" alt="Стати кораблем і кубом" loading="lazy"></figure>
+  <h3>Граф PlayerRun, група «Корабель летить»</h3>
+  <div class="chain"><span class="ev">On Fixed Update</span><i>→</i><span>If isShip</span><i>→</i><span>If (Space або ліва кнопка затиснута)</span><i>→</i><span>Add Force (Vector2 0, shipPower)</span></div>
+  <figure><img src="img/n14-fly.png" alt="Корабель летить" loading="lazy"></figure>
+  <p>Умову «затиснута» можна скопіювати з групи «Стрибок зі звуком»: там те саме <code>Is Pressed</code>. Політ лишається в гравці, бо це його власне вміння, а не дія порталу.</p>
+  <figure><img src="img/l13-ship.png" alt="Корабель" loading="lazy"><figcaption>Корабель між стовпами</figcaption></figure>
+  <div class="note">Стовпи — звичайні блоки: в них не помираєш, просто впираєшся. Для 8 років так менше сліз. Хто хоче складніше — поставте шипи на краях стовпів.</div>
+</section>
+
+<section id="l15">
+  <h2><span class="n">15</span>Спроби й прогрес</h2>
+  <p class="goal">Ціль: угорі видно «Спроба 5» і смужку, що заповнюється дорогою до фінішу.</p>
+  <div class="tags"><span class="tag">змінна Application</span><span class="tag">On Start</span><span class="tag">String Concat</span><span class="tag">ділення</span><span class="tag">Image Fill Amount</span></div>
+  <h3>Ассети</h3>
+  <p>Уже в проєкті: <code>UI/bar_track.png</code>, <code>UI/bar_fill.png</code>.</p>
+  <h3>Спроби: граф на самому написі</h3>
+  <ol>
+    <li>Текст <code>AttemptText</code> (Text - TextMeshPro) у правому верхньому куті.</li>
+    <li>На нього — <b>Script Machine</b> з графом <code>Scripts/Attempts</code>.</li>
+  </ol>
+  <p>Звичайні змінні обнуляються, коли рівень перезапускається. Змінні <b>Application</b> живуть, поки працює гра, — саме те для лічильника спроб.</p>
+  <div class="chain"><span class="ev">On Start</span><i>→</i><span>Set Variable (Application) attempts = attempts + 1</span><i>→</i><span>Set text (This) = String Concat «Спроба » + attempts</span></div>
+  <figure><img src="img/n15-attempts.png" alt="Граф Attempts" loading="lazy"></figure>
+  <p>Текст беремо з самого об'єкта: у <code>Text Mesh Pro UGUI: Set text</code> порт цілі лишаємо <b>This</b>.</p>
+  <div class="note red">У <code>Get Variable (Application)</code> у порт <b>Fallback</b> треба підключити окремий вузол <code>Integer 0</code>. Вписане прямо в порт значення Visual Scripting ігнорує, і гра падає з помилкою «Missing input value for 'fallback'».</div>
+  <h3>Прогрес: граф на смужці</h3>
+  <ol>
+    <li>UI <b>Image</b> <code>ProgressBar</code> (bar_track, Sliced, 700×44, угорі по центру). У ньому дочірній <code>Fill</code>: bar_fill, <b>Image Type = Filled</b>, Horizontal, Fill Amount 0.</li>
+    <li>На <code>Fill</code>:
+      <ul>
+        <li><b>Variables</b>: <code>player</code> (Transform гравця), <code>finish</code> (Transform фінішу);</li>
+        <li><b>Script Machine</b> з графом <code>Scripts/Progress</code>.</li>
+      </ul>
+    </li>
+  </ol>
+  <div class="chain"><span class="ev">On Update</span><i>→</i><span>Set Fill Amount (This) = x гравця ÷ x фінішу</span></div>
+  <figure><img src="img/n15-progress.png" alt="Граф Progress" loading="lazy"></figure>
+  <figure><img src="img/l14-progress.png" alt="HUD" loading="lazy"><figcaption>Половина рівня пройдена</figcaption></figure>
+</section>
+
+<section id="l16">
+  <h2><span class="n">16</span>Скіни й музика</h2>
+  <p class="goal">Ціль: у меню вибираєш колір куба (синій, зелений, рожевий), і в грі куб саме такий. У меню й у рівні грає музика.</p>
+  <div class="tags"><span class="tag">Application між сценами</span><span class="tag">Has Variable</span><span class="tag">Set Sprite</span><span class="tag">один граф на три кнопки</span><span class="tag">Audio Source Loop</span></div>
+  <h3>Ассети</h3>
+  <p>Уже в проєкті: 24 скіни в <code>Sprites/Skins</code>, 12 облич, музика <code>menu</code> і <code>level1</code>–<code>level3</code>. У прикладі три кнопки (синій, зелений, рожевий), а дитина може вибрати будь-які кольори й форми.</p>
+  <h3>Меню: кнопки скінів</h3>
+  <ol>
+    <li>Три кнопки <code>Skin1</code>–<code>Skin3</code>, картинка кожної — спрайт скіна.</li>
+    <li>На кожній кнопці:
+      <ul>
+        <li><b>Variables</b>: <code>skin</code> (Sprite), <code>clickSound</code> = sfx_coin;</li>
+        <li><b>Audio Source</b> (Play On Awake вимкнено);</li>
+        <li><b>Script Machine</b> з одним спільним графом <code>Scripts/SkinButton</code>.</li>
+      </ul>
+    </li>
+  </ol>
+  <p>Як і з порталами: граф один, а кнопки відрізняються лише своєю змінною <code>skin</code>.</p>
+  <div class="chain"><span class="ev">On Button Click</span><i>→</i><span>Set Variable (Application) skin = Get Variable (Object) skin</span><i>→</i><span>Play One Shot (clickSound)</span></div>
+  <figure><img src="img/n16-button.png" alt="Граф кнопки скіна" loading="lazy"></figure>
+  <h3>Рівень: граф на Visual</h3>
+  <p>Скін міняє той, хто його носить, — дочірній об'єкт гравця <code>Visual</code> (на ньому Sprite Renderer куба). Даємо йому <b>Script Machine</b> з графом <code>Scripts/Skin</code>:</p>
+  <div class="chain"><span class="ev">On Start</span><i>→</i><span>If (Has Variable Application «skin»)</span><i>→</i><span>Set Sprite (This) = Get Variable (Application) skin</span></div>
+  <figure><img src="img/n16-skin.png" alt="Граф Skin" loading="lazy"></figure>
+  <p>Перевірка <code>Has Variable</code> потрібна, щоб гра не ламалася, коли запускаєш одразу рівень, без меню.</p>
+  <h3>Музика</h3>
+  <p>На <code>Main Camera</code> в обох сценах — <b>Audio Source</b>: кліп <code>menu</code> або <code>level1</code>, Loop ✓, Play On Awake ✓, Volume 0.4. Графи не потрібні. Музика — Juhani Junkala, ліцензія CC0.</p>
+  <div class="shots">
+    <figure><img src="img/l15-menu.png" alt="Меню зі скінами" loading="lazy"><figcaption>Меню зі скінами</figcaption></figure>
+    <figure><img src="img/l15-green.png" alt="Зелений куб" loading="lazy"><figcaption>Вибрано зелений</figcaption></figure>
+  </div>
+</section>
+
+<section id="l17">
+  <h2><span class="n">17</span>Свій рівень</h2>
+  <p class="goal">Ціль: дитина сама будує рівень із усього, що вміє, і дає пограти родині.</p>
+  <ol>
+    <li>Зберегти копію сцени: <code>Level1</code> → Ctrl+D → <code>Level2</code>, прибрати в ній усе з <code>Level</code>.</li>
+    <li>Спершу намалювати рівень на папері: де батут, де портал, де корабель.</li>
+    <li>Будувати з префабів по шматочку й одразу проходити. Кожен префаб приносить свій граф, тож шипи, зірки й портали працюють одразу. Правило 4 / 5 / 8 клітинок допомагає.</li>
+    <li>Додати сцену в Build Settings, а в меню — другу кнопку з <code>Load Scene «Level2»</code> (той самий граф, що в <code>PlayButton</code>, тільки інша назва сцени). Фініш другого рівня теж веде в меню — граф <code>Finish</code> уже вміє.</li>
+    <li>Тест на друзях: дати пограти, мовчки дивитися, де вони гинуть, і полагодити найнечесніше місце.</li>
+  </ol>
+  <div class="note">Ідеї на потім: свій об'єкт зі свого графа — лава (<code>Hazard</code>), кристал на 5 очок (як зірка, але <code>coins + 5</code>), швидкісний портал (<code>Portal</code> з message «Швидко» і група в гравці, що ставить speed = 12).</div>
+</section>
+
+</main>
+<footer>
+  GeoGame · уроки 9–17 переписано під «кожному об'єкту свій граф» (22.10.2026). Готові точки <code>lesson-04</code> … <code>lesson-08</code> перевірено ботом. Повний набір матеріалів — у гілці <code>lessons</code> (13.10.2026).
+</footer>
+
+<div class="zv" hidden role="dialog" aria-label="Перегляд картинки">
+  <div class="zv-stage"><img alt=""></div>
+  <div class="zv-bar">
+    <button data-a="prev" title="Попередня (←)">‹</button>
+    <button data-a="out" title="Зменшити (−)">−</button>
+    <span class="pct">100%</span>
+    <button data-a="in" title="Збільшити (+)">+</button>
+    <button data-a="fit" title="Вмістити в екран (0)">Вмістити</button>
+    <button data-a="real" title="Справжній розмір (1)">1:1</button>
+    <button data-a="next" title="Наступна (→)">›</button>
+    <span class="sep"></span>
+    <button data-a="close" title="Закрити (Esc або ПКМ)">✕</button>
+  </div>
+  <div class="zv-cap"></div>
+</div>
+<script>
+(() => {
+  const imgs = [...document.querySelectorAll('main figure img')];
+  const zv = document.querySelector('.zv'), stage = zv.querySelector('.zv-stage'), view = stage.querySelector('img');
+  const pct = zv.querySelector('.pct'), cap = zv.querySelector('.zv-cap');
+  let idx = 0, s = 1, tx = 0, ty = 0, fitS = 1;
+  const MIN = 0.1, MAX = 8;
+
+  const apply = () => {
+    view.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+    pct.textContent = Math.round(s * 100) + '%';
+  };
+  const center = () => {
+    tx = (stage.clientWidth - view.naturalWidth * s) / 2;
+    ty = (stage.clientHeight - view.naturalHeight * s) / 2;
+  };
+  const fit = () => {
+    fitS = Math.min(stage.clientWidth / view.naturalWidth, stage.clientHeight / view.naturalHeight);
+    s = fitS; center(); apply();
+  };
+  const real = () => { s = 1; center(); apply(); };
+  // Масштаб навколо точки (px, py) на екрані, щоб вона лишалась під курсором.
+  const zoomAt = (k, px = stage.clientWidth / 2, py = stage.clientHeight / 2) => {
+    const ns = Math.min(MAX, Math.max(MIN, s * k));
+    tx = px - (px - tx) * ns / s; ty = py - (py - ty) * ns / s; s = ns; apply();
+  };
+
+  const show = i => {
+    idx = (i + imgs.length) % imgs.length;
+    const src = imgs[idx];
+    cap.textContent = src.closest('figure').querySelector('figcaption')?.textContent || src.alt || '';
+    view.onload = fit;
+    view.src = src.currentSrc || src.src;
+    if (view.complete && view.naturalWidth) fit();
+  };
+  const open = i => { zv.hidden = false; document.body.style.overflow = 'hidden'; show(i); };
+  const close = () => { zv.hidden = true; document.body.style.overflow = ''; };
+
+  imgs.forEach((img, i) => {
+    img.addEventListener('click', () => open(i));
+    const b = document.createElement('button');
+    b.className = 'zbtn'; b.type = 'button'; b.title = 'Збільшити картинку';
+    b.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21M10.5 7.5v6M7.5 10.5h6"/></svg>';
+    b.addEventListener('click', () => open(i));
+    img.closest('figure').appendChild(b);
+  });
+
+  const actions = {
+    in: () => zoomAt(1.25), out: () => zoomAt(0.8), fit, real,
+    prev: () => show(idx - 1), next: () => show(idx + 1), close,
+  };
+  zv.querySelector('.zv-bar').addEventListener('click', e => {
+    const a = e.target.closest('button')?.dataset.a; if (a) actions[a]();
+  });
+
+  stage.addEventListener('wheel', e => {
+    e.preventDefault();
+    const r = stage.getBoundingClientRect();
+    zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+
+  // ПКМ закриває перегляд.
+  zv.addEventListener('contextmenu', e => { e.preventDefault(); close(); });
+
+  stage.addEventListener('dblclick', e => {
+    const r = stage.getBoundingClientRect();
+    if (s > fitS * 1.05) fit(); else zoomAt(2.5, e.clientX - r.left, e.clientY - r.top);
+  });
+
+  // Перетягування мишею/пальцем і щипок двома пальцями.
+  const pts = new Map(); let pinch = 0;
+  stage.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    stage.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    stage.classList.add('drag');
+  });
+  stage.addEventListener('pointermove', e => {
+    const p = pts.get(e.pointerId); if (!p) return;
+    if (pts.size === 2) {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+      const r = stage.getBoundingClientRect();
+      if (pinch) zoomAt(d / pinch, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top);
+      pinch = d; return;
+    }
+    tx += e.clientX - p.x; ty += e.clientY - p.y; p.x = e.clientX; p.y = e.clientY; apply();
+  });
+  const up = e => { pts.delete(e.pointerId); pinch = 0; if (!pts.size) stage.classList.remove('drag'); };
+  stage.addEventListener('pointerup', up);
+  stage.addEventListener('pointercancel', up);
+
+  document.addEventListener('keydown', e => {
+    if (zv.hidden) return;
+    const k = { Escape: 'close', '+': 'in', '=': 'in', '-': 'out', '0': 'fit', '1': 'real', ArrowLeft: 'prev', ArrowRight: 'next' }[e.key];
+    if (k) { e.preventDefault(); actions[k](); }
+  });
+  addEventListener('resize', () => { if (!zv.hidden) fit(); });
+})();
+</script>
+</body>
+</html>
